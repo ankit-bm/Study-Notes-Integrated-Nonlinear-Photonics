@@ -90,7 +90,7 @@ Two pumps ($P_1$, $P_2$) interfere → intensity grating → refractive index gr
 
 ### Why BS matters for quantum:
 
-FWM-BS can frequency-shift single photons without adding vacuum noise — critical for quantum frequency conversion (e.g., WSe₂ emission at 980 nm → telecom).
+FWM-BS can frequency-shift single photons without adding vacuum noise — critical for quantum frequency conversion.
 
 ---
 
