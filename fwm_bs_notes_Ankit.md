@@ -260,6 +260,178 @@ These guidelines apply to χ(3) platforms (fiber, Si₃N₄) [2]. Bulk crystal s
 
 ---
 
+## Q7: Why can BS choose arbitrary target wavelength but PA cannot?
+
+**A:** PA idler is locked by symmetry around one pump. BS idler is set by tunable spacing between two pumps.
+
+| Process | Frequency relation | Control | Flexibility |
+|---------|-------------------|---------|-------------|
+| PA | $\omega_i = 2\omega_p - \omega_s$ | Pump center | Rigid (idler "reflects" around pump) |
+| BS | $\omega_i = \omega_s + (\omega_{p1} - \omega_{p2})$ | Pump spacing | High (idler "translates" by pump gap) |
+
+**Mental model:**
+- **PA is a see-saw:** Pump is the pivot. Move signal down, idler moves up by same amount.
+- **BS is a conveyor belt:** Pump spacing sets belt speed. Signal rides to any destination.
+
+**Caveat:** "Arbitrary" means widely tunable within phase-matching and resonator constraints.
+
+---
+
+## Q8: What is field enhancement (FE) and why does it matter?
+
+**A:** FE is the ratio of intracavity field to input field. It determines how much the cavity "amplifies" trapped light.
+
+$$FE = \frac{E_{cavity}}{E_{input}} \propto \sqrt{Q_L}$$
+
+**Why it matters:**
+
+Conversion efficiency scales as product of field enhancements [3]:
+
+$$\eta^{BS} \propto FE_{p1}^2 \cdot FE_{p2}^2 \cdot FE_s^2 \cdot FE_i^2$$
+
+| Factor | Exponent | Why |
+|--------|----------|-----|
+| Each pump | 2 | One photon participates per pump |
+| Signal | 2 | Input field |
+| Idler | 2 | Output field |
+
+**Practical impact:**
+- 10× higher FE → 100–10,000× efficiency gain
+- This is why mW pumps in resonators beat W pumps in waveguides
+
+**Key insight:** FE depends on both Q and coupling. High $Q_i$ alone isn't enough; need proper $Q_c$ matching (see Q9).
+
+---
+
+## Q9: Why must the resonator be overcoupled for high efficiency?
+
+**A:** Overcoupling ensures converted photons escape to waveguide faster than they're lost internally.
+
+### Coupling regimes:
+
+| Regime | Condition | Photon fate | Extraction efficiency |
+|--------|-----------|-------------|----------------------|
+| Undercoupled | $Q_c > Q_i$ | Lost to absorption | $\to 0$ |
+| Critically coupled | $Q_c = Q_i$ | Balanced loss/exit | ~50% |
+| Overcoupled | $Q_c < Q_i$ | Escapes to output | $\to 100\%$ |
+
+### Maximum BS efficiency [3]:
+
+$$\eta_{max}^{BS} = \frac{1}{1 + Q_c/Q_i}$$
+
+### Mental model (leaky bucket):
+
+Bucket (resonator) has two holes:
+- Hole A (internal loss): fixed size
+- Hole B (coupling to waveguide): your drain
+
+To collect water (photons), make drain >> leak. That's overcoupling.
+
+### Important trade-off:
+
+Overcoupling reduces loaded Q, which reduces field enhancement. Sweet spot is slightly overcoupled ($Q_c \approx 0.5$–$0.8 \times Q_i$), not extreme overcoupling.
+
+**One-liner:** Big exit door helps extraction, but too big means light doesn't stay long enough to convert.
+
+---
+
+## Q10: Why does PA have a threshold but BS doesn't?
+
+**A:** PA has gain that can self-oscillate. BS is a swap with no gain mechanism.
+
+### Comparison:
+
+| Feature | PA | BS |
+|---------|----|----|
+| Energy action | Pump → Signal + Idler (net flow) | $P_1 + S \leftrightarrow P_2 + I$ (swap) |
+| Gain type | Exponential ($e^{gL}$) | Sinusoidal ($\sin^2$) |
+| Instability | Threshold (OPO above it) | Stable (saturates at 100%) |
+
+### Mental model:
+
+**PA is an avalanche:** Once pump overcomes loss, single photon triggers runaway pair creation. Threshold event.
+
+**BS is a pendulum:** Energy swings between signal and idler frequencies. More pump = faster swing, but never explodes. Hits 100%, then swings back.
+
+### Key distinction:
+
+- **PA:** Total signal+idler photons *increase* (quantum gain)
+- **BS:** Total signal+idler photons *conserved* (frequency swap)
+
+### The over-rotation effect:
+
+In BS, pump power beyond 100% conversion causes efficiency to *decrease*. Light converts back to original frequency. No runaway.
+
+**One-liner:** Threshold exists when gain can overcome loss and self-sustain. BS has no gain, so no threshold.
+
+---
+
+## Q11: What is frequency matching and why is it harder than phase matching?
+
+**A:** Phase matching ensures waves stay in sync ($\Delta k = 0$). Frequency matching requires all 4 waves to land on cavity resonances simultaneously.
+
+| Constraint | Phase matching | Frequency matching |
+|------------|----------------|-------------------|
+| Requirement | Momentum conservation | Resonance with cavity modes |
+| System | Waveguides/fibers | Resonators |
+| Failure mode | Low efficiency | Zero signal buildup |
+
+**The problem:** FSR changes with wavelength due to dispersion. If 1550 nm FSR ≠ 980 nm FSR, the "teeth" of the two frequency combs drift apart over multiple modes.
+
+**Design rule:** Keep accumulated mismatch $N \cdot \Delta FSR < \kappa/2$ (linewidth) [3].
+
+**Mental model (two pianos):** One piano has keys spaced slightly wider. Playing a chord across both pianos drifts out of tune.
+
+---
+
+## Q12: What causes mode splitting in FWM-BS transmission?
+
+**A:** Strong pump hybridizes signal and idler into supermodes (avoided crossing).
+
+| Pump power | What you see |
+|------------|--------------|
+| Weak | Single transmission dip |
+| Strong | Dip splits into 2-3 dips |
+
+**Physical meaning:** Modes are no longer independent "signal" and "idler." They become superpositions that repel in frequency space.
+
+**Practical insight:** Splitting distance $2\Omega_0 \propto \gamma P_{pump}$ is a direct measure of nonlinear coupling strength [3].
+
+---
+
+## Q13: How does pump power affect conversion efficiency?
+
+**A:** Efficiency rises, peaks, then falls with increasing pump power.
+
+| Regime | Effect |
+|--------|--------|
+| Low power | Weak conversion |
+| Optimal | Maximum η |
+| High power | Kerr shift moves resonance away from signal |
+
+**Why it falls:** Kerr effect shifts cavity resonance. Fixed signal wavelength no longer sits on the (now shifted) eigenmode.
+
+**Solution:** Track signal detuning with pump power to stay on eigenmode.
+
+---
+
+## Q14: Why is intraband (~25%) less efficient than wideband (~60%)?
+
+**A:** Intraband creates two idlers. Wideband suppresses one.
+
+| Type | Idlers | Max efficiency | Achieved |
+|------|--------|----------------|----------|
+| Intraband | 2 (blue + red) | 50% each (lossless) | ~25% |
+| Wideband | 1 (other suppressed) | 100% (lossless) | ~60% |
+
+**Why intraband splits:** Small pump separation allows signal to scatter both up and down in frequency. Energy divides.
+
+**Why wideband is cleaner:** Large pump separation + dispersion means "wrong" idler doesn't fit any cavity mode. All energy funnels to one output.
+
+**To improve intraband:** Engineer dispersion so only one idler is frequency-matched.
+
+---
+
 ## References
 
 [1] G. P. Agrawal, *Nonlinear Fiber Optics*, 4th ed., Academic Press (2007). Chapter 10: Four-Wave Mixing.
